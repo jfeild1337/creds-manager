@@ -1,0 +1,9 @@
+/.project
+/.settings/org.eclipse.core.resources.prefs
+/.settings/org.eclipse.m2e.core.prefs
+*/.classpath
+*/.project
+/credsmgr-main/.settings/org.eclipse.core.resources.prefs
+/credsmgr-main/.settings/org.eclipse.jdt.core.prefs
+/credsmgr-main/.settings/org.eclipse.m2e.core.prefs
+/*/target
