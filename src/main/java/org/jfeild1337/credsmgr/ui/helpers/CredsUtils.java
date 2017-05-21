@@ -15,8 +15,8 @@ public class CredsUtils {
 
     public static String STR_VERSION_MAJOR = "1";
     public static String STR_VERSION_MINOR = "1";
-    public static String STR_VERSION_BUILD = "0";
-    public static String STR_BUILDER_TAG = "BETA3";
+    public static String STR_VERSION_BUILD = "1";
+    public static String STR_BUILDER_TAG = "SNAPSHOT (DEV)";
 
     public static int PWD_BTN_OK = 0;
     public static int PWD_BTN_CANCEL = 1;
@@ -32,6 +32,18 @@ public class CredsUtils {
     public static final String DEFAULT_OTHER_INFO = "(Set Value)";
 
     public static final String IMG_RESRC_PATH = "img";
+    
+    //Image files
+    public static final String ICON_BTN_ADD_FNAME = "button_white_add.png";
+    public static final String ICON_BTN_REMOVE_FNAME = "button_white_remove.png";
+    public static final String ICON_BTN_REMOVE_SMALL_FNAME = "button_white_remove_20x20.png";
+    public static final String ICON_SUCCESS_FNAME = "check_green.gif";
+    public static final String ICON_CLIPBOARD_FNAME = "Clipboard1.png";
+    public static final String ICON_ERROR_FNAME = "icon-error.png";
+    public static final String ICON_INFO_FNAME = "info.png";
+    public static final String ICON_LOCK_OPEN_FNAME = "lock_open.png";
+    public static final String ICON_LOCK_OPEN_SMALL_FNAME = "lock_open2.png";
+    public static final String ICON_WARN_FNAME = "warning-icon.png";
     
     /**
      * ENUM for domain fields
@@ -85,7 +97,7 @@ public class CredsUtils {
      * @param title 
      */
     public static void showErrorPopup(String msg, String title) {        
-        JOptionPane.showMessageDialog(null, msg, title, JOptionPane.ERROR_MESSAGE, getResourceImageAsIcon("icon-error.png"));
+        JOptionPane.showMessageDialog(null, msg, title, JOptionPane.ERROR_MESSAGE, getResourceImageAsIcon(ICON_ERROR_FNAME));
     }
 
     /**
@@ -173,6 +185,20 @@ public class CredsUtils {
         return option;
     }
 
+    /**
+     * Returns the version in String form
+     * 
+     * @return the version in the form x.y.z-BUILDVERSION (the -BUILDVERSION
+     *  will only be present if there is a BUILDVERSION assigned (i.e, BETA)
+     */
+    public static String getVersionString()
+    {
+        String buildTag = STR_BUILDER_TAG.isEmpty() ? "" : ("-" + CredsUtils.STR_BUILDER_TAG);
+        String versionString = MessageFormat.format("{0}.{1}.{2}{3}", 
+                STR_VERSION_MAJOR, STR_VERSION_MINOR, STR_VERSION_BUILD, buildTag); 
+        return versionString;
+    }
+    
     public static void main(String[] args) {        
         System.out.println(DomainFields.DOMAIN_ID.getName());
         //createNewDomainEntityFromDomainName("TESTING", "TEST NAME");

@@ -1,4 +1,4 @@
-package thirdpartyutils;
+package org.jfeild1337.thirdpartyutils;
 
 import java.util.Comparator;
 

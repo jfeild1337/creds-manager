@@ -23,7 +23,6 @@ import java.io.IOException;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -42,8 +41,7 @@ import javax.swing.border.EmptyBorder;
 
 import org.jfeild1337.credsmgr.ui.helpers.CredsUtils;
 import org.jfeild1337.thirdpartyutils.SortedComboBoxModel;
-
-import thirdpartyutils.*;
+import org.jfeild1337.thirdpartyutils.IgnoreCaseStringComparator;
 
 public class CredentialsManagerMainUI extends javax.swing.JFrame {
 
@@ -63,7 +61,7 @@ public class CredentialsManagerMainUI extends javax.swing.JFrame {
     private static final int UN_PWD_SECTION_HGT = 150;
     private static final int WINDOW_WIDTH = 506;
     private static final int WINDOW_HEIGHT = 500;
-    private static final String TITLE = "Credentials Manager v" + CredsUtils.STR_VERSION_MAJOR;
+    private static final String TITLE = "Credentials Manager v" + CredsUtils.STR_VERSION_MAJOR + "." + CredsUtils.STR_VERSION_MINOR;
     private JLabel lblUsername;
     private JTextField textFieldUsername;
     private JLabel lblPassword;
@@ -125,7 +123,7 @@ public class CredentialsManagerMainUI extends javax.swing.JFrame {
     public CredentialsManagerMainUI() {
         setMinimumSize(new Dimension(510, 500));
 
-        setIconImage(CredsUtils.getResourceImageAsIcon("lock_open2.png").getImage());
+        setIconImage(CredsUtils.getResourceImageAsIcon(CredsUtils.ICON_LOCK_OPEN_SMALL_FNAME).getImage());
 
         setTitle(TITLE);
         //setUpNimbusLookAndFeel();
@@ -247,7 +245,7 @@ public class CredentialsManagerMainUI extends javax.swing.JFrame {
         lytGridLblAndTxtFld.add(btnCopyDomainToClipboard, gbc_btnCopyDomainToClipboard);
         btnCopyDomainToClipboard.setToolTipText("Copy domain name to clipboard");
         btnCopyDomainToClipboard.setBorder(new EmptyBorder(2, 2, 2, 2));
-        btnCopyDomainToClipboard.setIcon(CredsUtils.getResourceImageAsIcon("Clipboard1.png"));
+        btnCopyDomainToClipboard.setIcon(CredsUtils.getResourceImageAsIcon(CredsUtils.ICON_CLIPBOARD_FNAME));
         btnCopyDomainToClipboard.setContentAreaFilled(false);
 
         lblUsername = new JLabel("USERNAME:");
@@ -274,7 +272,7 @@ public class CredentialsManagerMainUI extends javax.swing.JFrame {
         lytGridLblAndTxtFld.add(btnCopyUsername, gbc_btnCopyUsername);
         btnCopyUsername.setToolTipText("Copy username to clipboard");
         btnCopyUsername.setBorder(new EmptyBorder(2, 2, 2, 2));
-        btnCopyUsername.setIcon(CredsUtils.getResourceImageAsIcon("Clipboard1.png"));
+        btnCopyUsername.setIcon(CredsUtils.getResourceImageAsIcon(CredsUtils.ICON_CLIPBOARD_FNAME));
         btnCopyUsername.setContentAreaFilled(false);
 
         lblPassword = new JLabel("PASSWORD:");
@@ -302,7 +300,7 @@ public class CredentialsManagerMainUI extends javax.swing.JFrame {
         lytGridLblAndTxtFld.add(btnCopyPassword, gbc_btnCopyPassword);
         btnCopyPassword.setToolTipText("Copy password to clipboard");
         btnCopyPassword.setBorder(new EmptyBorder(2, 2, 2, 2));
-        btnCopyPassword.setIcon(CredsUtils.getResourceImageAsIcon("Clipboard1.png"));
+        btnCopyPassword.setIcon(CredsUtils.getResourceImageAsIcon(CredsUtils.ICON_CLIPBOARD_FNAME));
         btnCopyPassword.setContentAreaFilled(false);
 
         lblOtherInfo = new JLabel("OTHER INFO");
@@ -319,7 +317,7 @@ public class CredentialsManagerMainUI extends javax.swing.JFrame {
         lytGridLblAndTxtFld.add(btnCopyOtherInfo, gbc_btnCopyOtherInfo);
         btnCopyOtherInfo.setToolTipText("Copy \"Other Info\" to clipboard");
         btnCopyOtherInfo.setBorder(new EmptyBorder(2, 2, 2, 2));
-        btnCopyOtherInfo.setIcon(CredsUtils.getResourceImageAsIcon("Clipboard1.png"));
+        btnCopyOtherInfo.setIcon(CredsUtils.getResourceImageAsIcon(CredsUtils.ICON_CLIPBOARD_FNAME));
         btnCopyOtherInfo.setContentAreaFilled(false);
 
         mTextViewScrollPane = new JScrollPane();

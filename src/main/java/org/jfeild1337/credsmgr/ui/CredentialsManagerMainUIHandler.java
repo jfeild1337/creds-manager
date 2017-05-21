@@ -7,14 +7,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -34,13 +30,10 @@ import javax.swing.event.DocumentListener;
 import org.jfeild1337.credsmgr.crypto.CryptoUtils;
 import org.jfeild1337.credsmgr.db.CredentialsDBManager;
 import org.jfeild1337.credsmgr.db.DomainEntity;
-import org.jfeild1337.credsmgr.db.DBManager;
 import org.jfeild1337.credsmgr.filehandlers.DBFilehandler;
 import org.jfeild1337.credsmgr.filehandlers.DataFileFormatException;
-import org.jfeild1337.credsmgr.ui.helpers.ConfirmationDialog;
 import org.jfeild1337.credsmgr.ui.helpers.CredsUtils;
 import org.jfeild1337.credsmgr.ui.helpers.EnterStringPopup;
-import org.jfeild1337.credsmgr.ui.helpers.TextPopup;
 
 import org.apache.commons.codec.binary.Base64;
 import org.jdesktop.swingx.autocomplete.*;
@@ -62,10 +55,8 @@ public class CredentialsManagerMainUIHandler {
     private final String MSG_ERROR_DUPLICATE_DOMAIN = "**Error: Domain name already exists in the database**";
     private final String CONFIRM_DELETE_MSG = "This will permanently delete the selected Domain and all of its credentials.<br>Are you sure?";
     private final String CONFIRM_SWITCH_AND_DISCARD_CHANGES = "You have unsaved changes; switching domains will discard them.<br>Are you sure?";
-    private ImageIcon ICON_WARN = CredsUtils.getResourceImageAsIcon("warning-icon.png"); //new ImageIcon(getClass().getResource("/warning-icon.png"));
-    private ImageIcon ICON_INFO = CredsUtils.getResourceImageAsIcon("info.png"); //new ImageIcon(getClass().getResource("/info.png"));
-    private ImageIcon IMG_SUCCESS = CredsUtils.getResourceImageAsIcon("check_green.gif"); //new ImageIcon(getClass().getResource("/check_green.gif"));
-
+    private ImageIcon ICON_WARN = CredsUtils.getResourceImageAsIcon(CredsUtils.ICON_WARN_FNAME); 
+    
     //member vars
     private CredentialsManagerMainUI mMainUI;
     private CredentialsDBManager mDBManager;
@@ -528,9 +519,8 @@ public class CredentialsManagerMainUIHandler {
      */
     private void showHelpAbout() {
         String title = "About Credentials Manager";
-        String version = "Credentials Manager version "
-                + CredsUtils.STR_VERSION_MAJOR + "." + CredsUtils.STR_VERSION_MINOR + "." + CredsUtils.STR_VERSION_BUILD
-                + (CredsUtils.STR_BUILDER_TAG.isEmpty() ? "" : ("-" + CredsUtils.STR_BUILDER_TAG));
+        String version = MessageFormat.format("Credentials Manager version {0}", CredsUtils.getVersionString());
+                
         String msg = version + "<br><br>2017 jfeild1337<br><br>"
                 + "Application incorporates the following open-source libraries:<br>"
                 + "<ul>"
@@ -539,8 +529,7 @@ public class CredentialsManagerMainUIHandler {
                 + "<li>Swing Labs swingx-all-1.6.4</li>"
                 + "<li>Apache derby</li>"
                 + "</ul>";
-        //CredsUtils.showPopup(title, msg, new ImageIcon(getClass().getResource("/lock_open.png")));
-        CredsUtils.showPopup(title, msg, CredsUtils.getResourceImageAsIcon("lock_open.png"));
+        CredsUtils.showPopup(title, msg, CredsUtils.getResourceImageAsIcon(CredsUtils.ICON_LOCK_OPEN_FNAME));
     }
 
     /**
@@ -576,17 +565,29 @@ public class CredentialsManagerMainUIHandler {
                     mMapDomainNameToEntity.put(entClone.getDecryptedDomainName(), entClone);
                     mMainUI.getmCmbBoxDomainSelector().addItem(entClone.getDecryptedDomainName());
                 }
-                //show the user our success or failure...
+                //show the user our success or failure...                
                 int successfulEntities = newDatabaseEntities.size();
                 int duplicateCount = duplicates.size();
-                String msg = "Successfully added " + successfulEntities + " items to the database.";
+                boolean wereEntitiesAdded = successfulEntities > 0;
+                
+                String header;
+                if(wereEntitiesAdded)
+                    header = "Successfully added " + successfulEntities + " item(s) to the database.";
+                else
+                    header = "No entities were added from the file.";
+                StringBuilder msgBodySB = new StringBuilder(header);
                 if (duplicateCount > 0) {
-                    msg += "\n" + duplicateCount + " items were omitted since their domain names already exist in the database:\n";
+                    msgBodySB.append("<br/>");
+                    msgBodySB.append(duplicateCount).append(" items were omitted since their domain names already exist in the database:<br/><ul>");
                     for (String dName : duplicates) {
-                        msg += dName + "\n";
+                        msgBodySB.append("<li>").append(dName).append("</li>");
                     }
+                    msgBodySB.append("</ul>");
                 }
-                CredsUtils.showPopup("IMPORT COMPLETE", msg, ICON_WARN);
+                String msg = msgBodySB.toString();
+                String iconFile = wereEntitiesAdded ? CredsUtils.ICON_SUCCESS_FNAME : CredsUtils.ICON_WARN_FNAME;
+                CredsUtils.showPopup("IMPORT COMPLETE", msg, 
+                        CredsUtils.getResourceImageAsIcon(iconFile));
             }
         } catch (FileNotFoundException e) {
             CredsUtils.showErrorPopup("Cannot access file; file does not exist or you do not have permission to read it", "ERROR");
@@ -599,42 +600,14 @@ public class CredentialsManagerMainUIHandler {
      * Dumps database contents to plain-text file
      */
     private void exportDatabaseToFile() {
-        //CredsUtils.showPopup("Oops!", "This feature is not implemented yet!", new ImageIcon(getClass().getResource("/warning-icon.png")));
         JFileChooser fileChooser = new JFileChooser();
         File infile = openDialog(fileChooser);
         if (infile == null) {
             return;
         }
-
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(infile), "utf-8"));
-
-            writer.write(DBFilehandler.NEW_DOMAIN_DELIM);
-            writer.newLine();
-            for (DomainEntity entity : mMapDomainNameToEntity.values()) {
-                writer.write(entity.getDecryptedDomainName());
-                writer.newLine();
-                writer.write(entity.getDecryptedUsername());
-                writer.newLine();
-                writer.write(entity.getDecryptedPassword());
-                writer.newLine();
-                writer.write(entity.getDecryptedOtherInfo());
-                writer.newLine();
-                writer.write(DBFilehandler.NEW_DOMAIN_DELIM);
-                writer.newLine();
-            }
-            CredsUtils.showPopup("File Export Complete", "File export complete! Remember to delete the file when you are finished with it.", ICON_INFO);
-        } catch (IOException ex) {
-            CredsUtils.showErrorPopup("Error openeing file: " + ex.getMessage(), "File IO Error");
-        } finally {
-            try {
-                writer.close();
-            } catch (Exception ex) {/*ignore*/
-            }
-        }
-
+        DBFilehandler.storeDomainEntitiesToFile(infile, mMapDomainNameToEntity.values());
     }
+    
     //====================================================================
     //============================HELPERS=================================
     //====================================================================
